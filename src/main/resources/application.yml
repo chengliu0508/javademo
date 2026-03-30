@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:javademo}?useSSL=false&serverTimezone=UTC&characterEncoding=utf8&allowPublicKeyRetrieval=true
+    username: ${DB_USER:admin}
+    password: ${DB_PASSWORD:123456}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    # 强制迁移对象落在指定库（MySQL 中 schema == database）
+    schemas: javademo
+    default-schema: javademo
+
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
+
+app:
+  jwt:
+    # HS256 secret (must be sufficiently long for the HMAC key).
+    secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+    ttl-seconds: ${JWT_TTL_SECONDS:604800} # 7 days
+
