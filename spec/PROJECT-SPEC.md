@@ -10,7 +10,7 @@
 - `interceptor`：鉴权拦截器（`AuthInterceptor`）
 - `config`：Web MVC 配置（`AuthWebConfig` 实现 `WebMvcConfigurer`）
 - `config`：Web MVC + MyBatis-Plus 配置（`AuthWebConfig`、`MybatisPlusConfig`）
-- `service`：业务逻辑（`AuthService`、`UserService`、`PasswordEncoderConfig`）
+- `service`：业务逻辑（`AuthService`、`UserService`（继承 `ServiceImpl<UserMapper, UserEntity>`）、`PasswordEncoderConfig`）
 - `mapper`：MySQL 数据访问（`UserMapper`，基于 MyBatis-Plus `BaseMapper`）
 - `vo`：请求/响应 DTO（Login/User 的 VO）
 - `entity`：数据库模型（`UserEntity`）
@@ -19,6 +19,12 @@
 
 - `spec/modules/auth/AUTH-SPEC.md`：登录/退出/当前用户信息
 - `spec/modules/user/USER-SPEC.md`：用户管理（新增/修改/查看/删除）
+
+## 全局编码约定
+
+- 对于所有 `extends ServiceImpl<Mapper, Entity>` 的 Service：
+  - 统一使用 `this.baseMapper` 调用 Mapper 方法
+  - 不使用裸 `baseMapper`
 
 
 ## Swagger / OpenAPI（运行时）

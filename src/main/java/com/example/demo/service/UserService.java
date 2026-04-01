@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.vo.UserCreateRequestVO;
@@ -15,18 +16,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
-    private final UserMapper userMapper;
+public class UserService extends ServiceImpl<UserMapper, UserEntity> {
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userMapper = userMapper;
+    public UserService(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserVO> list(int page, int size) {
         Page<UserEntity> p = new Page<>(Math.max(1, page + 1L), Math.max(1, size));
-        Page<UserEntity> result = userMapper.selectPage(
+        Page<UserEntity> result = this.baseMapper.selectPage(
                 p,
                 new LambdaQueryWrapper<UserEntity>().orderByDesc(UserEntity::getId)
         );
@@ -34,7 +33,7 @@ public class UserService {
     }
 
     public UserVO getById(Long id) {
-        UserEntity user = userMapper.selectById(id);
+        UserEntity user = this.baseMapper.selectById(id);
         if (user == null) {
             throw new IllegalArgumentException("user not found");
         }
@@ -42,7 +41,7 @@ public class UserService {
     }
 
     public UserVO create(UserCreateRequestVO req) {
-        Long count = userMapper.selectCount(
+        Long count = this.baseMapper.selectCount(
                 new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUsername, req.getUsername())
         );
         if (count != null && count > 0) {
@@ -55,18 +54,18 @@ public class UserService {
         entity.setPasswordHash(hash);
         entity.setDisplayName(req.getDisplayName());
         entity.setStatus(req.getStatus() == null ? 1 : req.getStatus());
-        userMapper.insert(entity);
+        this.baseMapper.insert(entity);
         return getById(entity.getId());
     }
 
     public UserVO update(Long id, UserUpdateRequestVO req) {
-        UserEntity before = userMapper.selectById(id);
+        UserEntity before = this.baseMapper.selectById(id);
         if (before == null) {
             throw new IllegalArgumentException("user not found");
         }
 
         if (req.getUsername() != null && !req.getUsername().equals(before.getUsername())) {
-            Long usernameCount = userMapper.selectCount(
+            Long usernameCount = this.baseMapper.selectCount(
                     new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUsername, req.getUsername())
             );
             if (usernameCount != null && usernameCount > 0) {
@@ -99,7 +98,7 @@ public class UserService {
             return toVO(before);
         }
 
-        int updated = userMapper.update(null, uw);
+        int updated = this.baseMapper.update(null, uw);
         if (updated == 0) {
             return toVO(before);
         }
@@ -107,7 +106,7 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        int deleted = userMapper.deleteById(id);
+        int deleted = this.baseMapper.deleteById(id);
         if (deleted == 0) {
             throw new IllegalArgumentException("user not found");
         }
