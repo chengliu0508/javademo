@@ -12,6 +12,7 @@
 - `config`：Web MVC + MyBatis-Plus 配置（`AuthWebConfig`、`MybatisPlusConfig`）
 - `service`：业务逻辑（`AuthService`、`UserService`（继承 `ServiceImpl<UserMapper, UserEntity>`）、`PasswordEncoderConfig`）
 - `mapper`：MySQL 数据访问（`UserMapper`，基于 MyBatis-Plus `BaseMapper`）
+  - `UserStructMapper`：MapStruct 对象转换（`UserEntity` -> `UserVO/LoginResponseVO/MeResponseVO`）
 - `vo`：请求/响应 DTO（Login/User 的 VO）
 - `entity`：数据库模型（`UserEntity`）
 
@@ -66,5 +67,7 @@ Redis：
     - `flyway-mysql`：`9.22.3`
   - MyBatis-Plus：
     - `mybatis-plus-spring-boot3-starter`：`3.5.16`
+  - MapStruct：`1.5.5.Final`
+  - Lombok：`1.18.32`
   - spring-boot-starter-data-redis：版本由 Spring Boot parent 管理
 
