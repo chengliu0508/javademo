@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.mapper.UserStructMapper;
 import com.example.demo.vo.UserCreateRequestVO;
 import com.example.demo.vo.UserUpdateRequestVO;
 import com.example.demo.vo.UserVO;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserService extends ServiceImpl<UserMapper, UserEntity> {
     private final PasswordEncoder passwordEncoder;
+    private final UserStructMapper userStructMapper;
 
-    public UserService(PasswordEncoder passwordEncoder) {
+    public UserService(PasswordEncoder passwordEncoder, UserStructMapper userStructMapper) {
         this.passwordEncoder = passwordEncoder;
+        this.userStructMapper = userStructMapper;
     }
 
     public List<UserVO> list(int page, int size) {
@@ -29,7 +32,7 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
                 p,
                 new LambdaQueryWrapper<UserEntity>().orderByDesc(UserEntity::getId)
         );
-        return result.getRecords().stream().map(this::toVO).collect(Collectors.toList());
+        return result.getRecords().stream().map(userStructMapper::toUserVO).collect(Collectors.toList());
     }
 
     public UserVO getById(Long id) {
@@ -37,7 +40,7 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
         if (user == null) {
             throw new IllegalArgumentException("user not found");
         }
-        return toVO(user);
+        return userStructMapper.toUserVO(user);
     }
 
     public UserVO create(UserCreateRequestVO req) {
@@ -95,12 +98,12 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
 
         if (!hasUpdateField) {
             // nothing changed
-            return toVO(before);
+            return userStructMapper.toUserVO(before);
         }
 
         int updated = this.baseMapper.update(null, uw);
         if (updated == 0) {
-            return toVO(before);
+            return userStructMapper.toUserVO(before);
         }
         return getById(id);
     }
@@ -112,15 +115,5 @@ public class UserService extends ServiceImpl<UserMapper, UserEntity> {
         }
     }
 
-    private UserVO toVO(UserEntity u) {
-        UserVO vo = new UserVO();
-        vo.setId(u.getId());
-        vo.setUsername(u.getUsername());
-        vo.setDisplayName(u.getDisplayName());
-        vo.setStatus(u.getStatus());
-        vo.setCreatedAt(u.getCreatedAt());
-        vo.setUpdatedAt(u.getUpdatedAt());
-        return vo;
-    }
 }
 

@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.mapper.UserStructMapper;
 import com.example.demo.vo.LoginRequestVO;
 import com.example.demo.vo.LoginResponseVO;
 import com.example.demo.vo.MeResponseVO;
@@ -14,11 +15,13 @@ import java.util.Optional;
 @Service
 public class AuthService {
     private final UserMapper userMapper;
+    private final UserStructMapper userStructMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
 
-    public AuthService(UserMapper userMapper, PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService) {
+    public AuthService(UserMapper userMapper, UserStructMapper userStructMapper, PasswordEncoder passwordEncoder, JwtTokenService jwtTokenService) {
         this.userMapper = userMapper;
+        this.userStructMapper = userStructMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenService = jwtTokenService;
     }
@@ -44,13 +47,7 @@ public class AuthService {
                 user.getStatus()
         );
 
-        LoginResponseVO resp = new LoginResponseVO();
-        resp.setToken(token);
-        resp.setUserId(user.getId());
-        resp.setUsername(user.getUsername());
-        resp.setDisplayName(user.getDisplayName());
-        resp.setStatus(user.getStatus());
-        return resp;
+        return userStructMapper.toLoginResponse(user, token);
     }
 
     public boolean logout(String token) {
@@ -67,12 +64,7 @@ public class AuthService {
             throw new IllegalArgumentException("user not found");
         }
 
-        MeResponseVO resp = new MeResponseVO();
-        resp.setUserId(user.getId());
-        resp.setUsername(user.getUsername());
-        resp.setDisplayName(user.getDisplayName());
-        resp.setStatus(user.getStatus());
-        return resp;
+        return userStructMapper.toMeResponse(user);
     }
 }
 
