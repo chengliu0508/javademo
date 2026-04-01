@@ -6,7 +6,9 @@
 
 ## 当前分层目录（按 controller/service/mapper/vo/entity）
 
-- `controller`：对外 REST 接口与鉴权拦截（`AuthController`、`UserController`、`AuthInterceptor`）
+- `controller`：对外 REST 接口（`AuthController`、`UserController`）
+- `interceptor`：鉴权拦截器（`AuthInterceptor`）
+- `config`：Web MVC 配置（`AuthWebConfig` 实现 `WebMvcConfigurer`）
 - `service`：业务逻辑（`AuthService`、`UserService`、`PasswordEncoderConfig`）
 - `mapper`：MySQL 数据访问（`UserMapper`：用户 CRUD + 登录校验）
 - `vo`：请求/响应 DTO（Login/User 的 VO）

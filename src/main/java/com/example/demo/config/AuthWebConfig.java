@@ -1,5 +1,6 @@
-package com.example.demo.controller;
+package com.example.demo.config;
 
+import com.example.demo.interceptor.AuthInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -19,4 +20,3 @@ public class AuthWebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/auth/me");
     }
 }
-

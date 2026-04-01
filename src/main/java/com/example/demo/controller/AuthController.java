@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.interceptor.AuthInterceptor;
 import com.example.demo.service.AuthService;
 import com.example.demo.vo.LoginRequestVO;
 import com.example.demo.vo.LoginResponseVO;

@@ -1,5 +1,6 @@
-package com.example.demo.controller;
+package com.example.demo.interceptor;
 
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
-import com.example.demo.mapper.UserMapper;
 
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
@@ -61,4 +61,3 @@ public class AuthInterceptor implements HandlerInterceptor {
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }
-
