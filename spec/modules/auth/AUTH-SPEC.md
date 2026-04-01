@@ -54,3 +54,13 @@ Base Path: `/api/auth`
 - Redis key：`auth:jwt:<token>`，value 为 `userId`，TTL 与 JWT `exp` 一致
 - `POST /api/auth/logout` 会删除 Redis 中对应 key，使 token 立即失效
 
+## Swagger 调试步骤
+
+1. 先调用 `POST /api/auth/login` 获取 `token`
+2. Swagger 右上角点击 `Authorize`
+3. 选择 `bearerAuth`，仅粘贴 token 字符串（不需要手动写 `Bearer ` 前缀）
+4. 再调用 `/api/users/**` 或 `/api/auth/me`
+
+如果仍报 `missing or invalid Authorization header`：
+- 说明当前请求没有带上 Authorization，或 token 已失效（已 logout / Redis key 过期）
+

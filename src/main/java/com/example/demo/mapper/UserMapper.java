@@ -1,7 +1,6 @@
 package com.example.demo.mapper;
 
 import com.example.demo.entity.UserEntity;
-import com.example.demo.entity.UserSessionEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class UserMapper {
@@ -33,15 +31,6 @@ public class UserMapper {
         u.setCreatedAt(toLocalDateTime(rs.getTimestamp("created_at")));
         u.setUpdatedAt(toLocalDateTime(rs.getTimestamp("updated_at")));
         return u;
-    };
-
-    private final RowMapper<UserSessionEntity> sessionRowMapper = (rs, rowNum) -> {
-        UserSessionEntity s = new UserSessionEntity();
-        s.setToken(rs.getString("token"));
-        s.setUserId(rs.getLong("user_id"));
-        s.setCreatedAt(toLocalDateTime(rs.getTimestamp("created_at")));
-        s.setExpiresAt(toLocalDateTime(rs.getTimestamp("expires_at")));
-        return s;
     };
 
     private static LocalDateTime toLocalDateTime(Timestamp ts) {
@@ -129,30 +118,6 @@ public class UserMapper {
 
     public int deleteUser(Long id) {
         return jdbcTemplate.update("DELETE FROM app_user WHERE id = ?", id);
-    }
-
-    public String createSession(Long userId, LocalDateTime expiresAt) {
-        String token = UUID.randomUUID().toString();
-        jdbcTemplate.update(
-                "INSERT INTO user_session(token, user_id, expires_at) VALUES(?,?,?)",
-                token,
-                userId,
-                Timestamp.valueOf(expiresAt)
-        );
-        return token;
-    }
-
-    public Optional<Long> validateSession(String token) {
-        List<Long> rows = jdbcTemplate.query(
-                "SELECT user_id FROM user_session WHERE token = ? AND expires_at > NOW() LIMIT 1",
-                (rs, rowNum) -> rs.getLong("user_id"),
-                token
-        );
-        return rows.isEmpty() ? Optional.empty() : Optional.of(rows.get(0));
-    }
-
-    public int deleteSession(String token) {
-        return jdbcTemplate.update("DELETE FROM user_session WHERE token = ?", token);
     }
 
     public boolean usernameExists(String username) {

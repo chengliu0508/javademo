@@ -12,7 +12,7 @@
 - `service`：业务逻辑（`AuthService`、`UserService`、`PasswordEncoderConfig`）
 - `mapper`：MySQL 数据访问（`UserMapper`：用户 CRUD + 登录校验）
 - `vo`：请求/响应 DTO（Login/User 的 VO）
-- `entity`：数据库模型（`UserEntity`；`UserSessionEntity` 当前未使用）
+- `entity`：数据库模型（`UserEntity`）
 
 ## 模块化 Specs（未来可持续扩展）
 

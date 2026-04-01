@@ -14,7 +14,7 @@
 
 > 说明：`DB_NAME` 需要你的库已创建好（Flyway 不会自动创建数据库）。
 
-启动后会自动执行 Flyway 迁移：`src/main/resources/db/migration/V1__init.sql`，创建 `app_user` 与 `user_session` 两张表。
+启动后会自动执行 Flyway 迁移：`src/main/resources/db/migration/V1__init.sql`，创建 `app_user` 表。
 ```
 $env:JAVA_HOME="D:\java\jdk17"
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
