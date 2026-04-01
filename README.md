@@ -25,6 +25,8 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 在当前目录执行：
 
 ```powershell
+mvn -DskipTests clean package
+
 mvn -q -DskipTests spring-boot:run
 ```
 

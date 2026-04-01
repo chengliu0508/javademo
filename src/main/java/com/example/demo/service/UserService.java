@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.vo.UserCreateRequestVO;
@@ -9,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,51 +25,89 @@ public class UserService {
     }
 
     public List<UserVO> list(int page, int size) {
-        return userMapper.list(page, size).stream().map(this::toVO).collect(Collectors.toList());
+        Page<UserEntity> p = new Page<>(Math.max(1, page + 1L), Math.max(1, size));
+        Page<UserEntity> result = userMapper.selectPage(
+                p,
+                new LambdaQueryWrapper<UserEntity>().orderByDesc(UserEntity::getId)
+        );
+        return result.getRecords().stream().map(this::toVO).collect(Collectors.toList());
     }
 
     public UserVO getById(Long id) {
-        return userMapper.findById(id).map(this::toVO)
-                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+        UserEntity user = userMapper.selectById(id);
+        if (user == null) {
+            throw new IllegalArgumentException("user not found");
+        }
+        return toVO(user);
     }
 
     public UserVO create(UserCreateRequestVO req) {
-        if (userMapper.usernameExists(req.getUsername())) {
+        Long count = userMapper.selectCount(
+                new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUsername, req.getUsername())
+        );
+        if (count != null && count > 0) {
             throw new IllegalArgumentException("username already exists");
         }
 
         String hash = passwordEncoder.encode(req.getPassword());
-        long id = userMapper.createUser(req.getUsername(), hash, req.getDisplayName(), req.getStatus());
-        return getById(id);
+        UserEntity entity = new UserEntity();
+        entity.setUsername(req.getUsername());
+        entity.setPasswordHash(hash);
+        entity.setDisplayName(req.getDisplayName());
+        entity.setStatus(req.getStatus() == null ? 1 : req.getStatus());
+        userMapper.insert(entity);
+        return getById(entity.getId());
     }
 
     public UserVO update(Long id, UserUpdateRequestVO req) {
-        Optional<UserEntity> existing = userMapper.findById(id);
-        UserEntity before = existing.orElseThrow(() -> new IllegalArgumentException("user not found"));
-
-        String newUsername = req.getUsername();
-        String newPasswordHash = null;
-        if (req.getPassword() != null && !req.getPassword().isBlank()) {
-            newPasswordHash = passwordEncoder.encode(req.getPassword());
+        UserEntity before = userMapper.selectById(id);
+        if (before == null) {
+            throw new IllegalArgumentException("user not found");
         }
 
-        int updated = userMapper.updateUser(
-                id,
-                newUsername,
-                newPasswordHash,
-                req.getDisplayName(),
-                req.getStatus()
-        );
+        if (req.getUsername() != null && !req.getUsername().equals(before.getUsername())) {
+            Long usernameCount = userMapper.selectCount(
+                    new LambdaQueryWrapper<UserEntity>().eq(UserEntity::getUsername, req.getUsername())
+            );
+            if (usernameCount != null && usernameCount > 0) {
+                throw new IllegalArgumentException("username already exists");
+            }
+        }
 
-        if (updated == 0) {
+        LambdaUpdateWrapper<UserEntity> uw = new LambdaUpdateWrapper<UserEntity>().eq(UserEntity::getId, id);
+        boolean hasUpdateField = false;
+
+        if (req.getUsername() != null) {
+            uw.set(UserEntity::getUsername, req.getUsername());
+            hasUpdateField = true;
+        }
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
+            uw.set(UserEntity::getPasswordHash, passwordEncoder.encode(req.getPassword()));
+            hasUpdateField = true;
+        }
+        if (req.getDisplayName() != null) {
+            uw.set(UserEntity::getDisplayName, req.getDisplayName());
+            hasUpdateField = true;
+        }
+        if (req.getStatus() != null) {
+            uw.set(UserEntity::getStatus, req.getStatus());
+            hasUpdateField = true;
+        }
+
+        if (!hasUpdateField) {
             // nothing changed
+            return toVO(before);
+        }
+
+        int updated = userMapper.update(null, uw);
+        if (updated == 0) {
             return toVO(before);
         }
         return getById(id);
     }
 
     public void delete(Long id) {
-        int deleted = userMapper.deleteUser(id);
+        int deleted = userMapper.deleteById(id);
         if (deleted == 0) {
             throw new IllegalArgumentException("user not found");
         }

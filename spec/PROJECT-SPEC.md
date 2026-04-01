@@ -9,8 +9,9 @@
 - `controller`：对外 REST 接口（`AuthController`、`UserController`）
 - `interceptor`：鉴权拦截器（`AuthInterceptor`）
 - `config`：Web MVC 配置（`AuthWebConfig` 实现 `WebMvcConfigurer`）
+- `config`：Web MVC + MyBatis-Plus 配置（`AuthWebConfig`、`MybatisPlusConfig`）
 - `service`：业务逻辑（`AuthService`、`UserService`、`PasswordEncoderConfig`）
-- `mapper`：MySQL 数据访问（`UserMapper`：用户 CRUD + 登录校验）
+- `mapper`：MySQL 数据访问（`UserMapper`，基于 MyBatis-Plus `BaseMapper`）
 - `vo`：请求/响应 DTO（Login/User 的 VO）
 - `entity`：数据库模型（`UserEntity`）
 
@@ -57,5 +58,7 @@ Redis：
   - Flyway：
     - `flyway-core`：`9.22.3`
     - `flyway-mysql`：`9.22.3`
+  - MyBatis-Plus：
+    - `mybatis-plus-spring-boot3-starter`：`3.5.16`
   - spring-boot-starter-data-redis：版本由 Spring Boot parent 管理
 

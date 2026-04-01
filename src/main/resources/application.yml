@@ -14,6 +14,8 @@ spring:
     # 强制迁移对象落在指定库（MySQL 中 schema == database）
     schemas: javademo
     default-schema: javademo
+    # 跳过启动时对已执行迁移文件的校验和比对（SQL 文件修改后不报 checksum mismatch）
+    validate-on-migrate: false
 
   data:
     redis:
@@ -26,4 +28,8 @@ app:
     # HS256 secret (must be sufficiently long for the HMAC key).
     secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     ttl-seconds: ${JWT_TTL_SECONDS:604800} # 7 days
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
 

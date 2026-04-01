@@ -1,5 +1,7 @@
 package com.example.demo.interceptor;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +30,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         // Once there is at least one user, all /api/users/** endpoints require Bearer token.
         String uri = request.getRequestURI();
         if ("/api/users".equals(uri) && "POST".equalsIgnoreCase(request.getMethod())) {
-            if (userMapper.countUsers() == 0) {
+            Long userCount = userMapper.selectCount(new LambdaQueryWrapper<UserEntity>());
+            if (userCount == null || userCount == 0) {
                 return true;
             }
         }

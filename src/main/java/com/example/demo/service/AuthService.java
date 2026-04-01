@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.vo.LoginRequestVO;
@@ -23,8 +24,14 @@ public class AuthService {
     }
 
     public LoginResponseVO login(LoginRequestVO req) {
-        UserEntity user = userMapper.findByUsername(req.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("username or password is incorrect"));
+        UserEntity user = userMapper.selectOne(
+                new LambdaQueryWrapper<UserEntity>()
+                        .eq(UserEntity::getUsername, req.getUsername())
+                        .last("LIMIT 1")
+        );
+        if (user == null) {
+            throw new IllegalArgumentException("username or password is incorrect");
+        }
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
             throw new IllegalArgumentException("username or password is incorrect");
@@ -55,8 +62,10 @@ public class AuthService {
     }
 
     public MeResponseVO me(Long userId) {
-        UserEntity user = userMapper.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("user not found"));
+        UserEntity user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("user not found");
+        }
 
         MeResponseVO resp = new MeResponseVO();
         resp.setUserId(user.getId());
