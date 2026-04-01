@@ -41,14 +41,19 @@ Redis：
 - Java：
   - 项目编译目标（`pom.xml` `java.version`）：`17`
 - Maven：
-  - 当前 shell：`mvn` 命令未找到（未能获取版本）
+  - 当前 shell：`mvn` 3.9.14
 - Maven 插件：
   - `spring-boot-maven-plugin`：使用 `spring-boot-starter-parent` 管理的版本
   - `maven-compiler-plugin`：`3.11.0`
+- 构建要求：
+  - 本项目（Spring Boot 3.2.x）编译必须使用 `JDK 17+`
 - 关键依赖（版本来自 `pom.xml`）：
   - Spring Boot：`3.2.5`（parent）
   - springdoc-openapi：`2.5.0`
   - jjwt（JWT）：`0.12.5`
   - mysql-connector-j：`8.3.0`
-  - spring-boot-starter-flyway / data-redis：版本由 Spring Boot parent 管理
+  - Flyway：
+    - `flyway-core`：`9.22.3`
+    - `flyway-mysql`：`9.22.3`
+  - spring-boot-starter-data-redis：版本由 Spring Boot parent 管理
 

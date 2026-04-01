@@ -8,7 +8,7 @@ Base Path: `/api/auth`
 - Request:
 ```json
 {
-  "username": "admin",
+  "username": "root",
   "password": "123456"
 }
 ```
@@ -17,7 +17,7 @@ Base Path: `/api/auth`
 {
   "token": "jwt-token",
   "userId": 1,
-  "username": "admin",
+  "username": "root",
   "displayName": "管理员",
   "status": 1
 }
@@ -42,7 +42,7 @@ Base Path: `/api/auth`
 ```json
 {
   "userId": 1,
-  "username": "admin",
+  "username": "root",
   "displayName": "管理员",
   "status": 1
 }

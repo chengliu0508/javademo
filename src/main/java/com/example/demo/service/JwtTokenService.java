@@ -54,7 +54,8 @@ public class JwtTokenService {
 
     public Optional<Long> validateTokenAndGetUserId(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            // Use parser() API for broader JJWT version compatibility.
+            Claims claims = Jwts.parser()
                     .setSigningKey(hmacKey)
                     .build()
                     .parseClaimsJws(token)

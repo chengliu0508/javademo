@@ -9,13 +9,17 @@
 - `DB_HOST`：MySQL 地址（默认 `localhost`）
 - `DB_PORT`：端口（默认 `3306`）
 - `DB_NAME`：数据库名（默认 `javademo`）
-- `DB_USER`：用户名（默认 `admin`）
+- `DB_USER`：用户名（默认 `root`）
 - `DB_PASSWORD`：密码（默认 `123456`）
 
 > 说明：`DB_NAME` 需要你的库已创建好（Flyway 不会自动创建数据库）。
 
 启动后会自动执行 Flyway 迁移：`src/main/resources/db/migration/V1__init.sql`，创建 `app_user` 与 `user_session` 两张表。
+```
+$env:JAVA_HOME="D:\java\jdk17"
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
 
+```
 ## 启动
 
 在当前目录执行：
@@ -29,7 +33,7 @@ mvn -q -DskipTests spring-boot:run
 OpenAPI：
 - `GET /v3/api-docs`
 - `GET /swagger-ui.html`
-
+-  http://localhost:8080/swagger-ui/index.html
 ## API
 
 Base Path：`/api`
@@ -41,7 +45,7 @@ Base Path：`/api`
 请求体：
 
 ```json
-{ "username": "admin", "password": "123456" }
+{ "username": "root", "password": "123456" }
 ```
 
 返回：`token` + 当前用户信息
