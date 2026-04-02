@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.TaskMapper">
+
+    <!-- selectPageWithAssignee：assigneeId 非空时用 EXISTS 限定「该用户必须在 task_assignee 中」 -->
+    <select id="selectPageWithAssignee" resultType="com.example.demo.entity.TaskEntity">
+        SELECT t.*
+        FROM task t
+        <where>
+            <if test="assigneeId != null">
+                AND EXISTS (
+                    SELECT 1 FROM task_assignee ta
+                    WHERE ta.task_id = t.id AND ta.assignee_id = #{assigneeId}
+                )
+            </if>
+            <if test="status != null and status != ''">
+                AND t.status = #{status}
+            </if>
+            <if test="creatorId != null">
+                AND t.creator_id = #{creatorId}
+            </if>
+            <if test="mode != null and mode != ''">
+                AND t.mode = #{mode}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (t.title LIKE CONCAT('%', #{keyword}, '%')
+                  OR t.content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY t.created_at DESC
+    </select>
+
+</mapper>

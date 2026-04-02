@@ -1,4 +1,4 @@
-package com.example.demo.mapper;
+package com.example.demo.convert;
 
 import com.example.demo.entity.UserEntity;
 import com.example.demo.vo.LoginResponseVO;
@@ -18,4 +18,3 @@ public interface UserStructMapper {
     @Mapping(target = "userId", source = "id")
     MeResponseVO toMeResponse(UserEntity user);
 }
-

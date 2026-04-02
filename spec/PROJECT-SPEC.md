@@ -6,20 +6,26 @@
 
 ## 当前分层目录（按 controller/service/mapper/vo/entity）
 
-- `controller`：对外 REST 接口（`AuthController`、`UserController`）
+- `controller`：对外 REST 接口（`AuthController`、`UserController`、`TaskController`）
 - `interceptor`：鉴权拦截器（`AuthInterceptor`）
-- `config`：Web MVC 配置（`AuthWebConfig` 实现 `WebMvcConfigurer`）
-- `config`：Web MVC + MyBatis-Plus 配置（`AuthWebConfig`、`MybatisPlusConfig`）
-- `service`：业务逻辑（`AuthService`、`UserService`（继承 `ServiceImpl<UserMapper, UserEntity>`）、`PasswordEncoderConfig`）
-- `mapper`：MySQL 数据访问（`UserMapper`，基于 MyBatis-Plus `BaseMapper`）
-  - `UserStructMapper`：MapStruct 对象转换（`UserEntity` -> `UserVO/LoginResponseVO/MeResponseVO`）
-- `vo`：请求/响应 DTO（Login/User 的 VO）
-- `entity`：数据库模型（`UserEntity`）
+- `config`：Web MVC + MyBatis-Plus 配置（`AuthWebConfig`、`MybatisPlusConfig`、`OpenApiSecurityConfig`）
+- `service`：业务逻辑
+  - `AuthService`、`UserService`（继承 `ServiceImpl<UserMapper, UserEntity>`）
+  - `TaskService`（继承 `ServiceImpl<TaskMapper, TaskEntity>`）
+  - `JwtTokenService`、`PasswordEncoderConfig`
+- `mapper`：MySQL 数据访问
+  - `UserMapper`、`TaskMapper`、`TaskAssigneeMapper`（基于 MyBatis-Plus `BaseMapper`）
+  - `UserStructMapper`：MapStruct（`UserEntity` -> `UserVO/LoginResponseVO/MeResponseVO`）
+  - `TaskStructMapper`：MapStruct（`TaskEntity` -> `TaskVO`、`TaskAssigneeEntity` -> `TaskAssigneeVO`）
+- `vo`：请求/响应 DTO（Login/User/Task 的 VO）
+- `entity`：数据库模型（`UserEntity`、`TaskEntity`、`TaskAssigneeEntity`）
+- `resources/mapper/`：MyBatis XML（`TaskMapper.xml`，含 JOIN 分配人的分页查询）
 
 ## 模块化 Specs（未来可持续扩展）
 
 - `spec/modules/auth/AUTH-SPEC.md`：登录/退出/当前用户信息
 - `spec/modules/user/USER-SPEC.md`：用户管理（新增/修改/查看/删除）
+- `spec/modules/task/TASK-SPEC.md`：代办任务管理（并行/协作审批、分配人反馈）
 
 ## 全局编码约定
 
@@ -38,9 +44,11 @@
 
 MySQL：
 - 数据库：`javademo`
-- 迁移：Flyway（`src/main/resources/db/migration/V1__init.sql`）
+- 迁移：Flyway（`src/main/resources/db/migration/`）
 - 表：
-  - `app_user`：用户信息（用户名唯一，password_hash 使用 BCrypt）
+  - `app_user`（V1）：用户信息（用户名唯一，password_hash 使用 BCrypt）
+  - `task`（V2）：代办任务（mode: PARALLEL/COLLABORATIVE，status: PENDING/IN_PROGRESS/COMPLETED/CANCELLED）
+  - `task_assignee`（V2）：任务分配人（status: PENDING/COMPLETED/REJECTED，含反馈内容）
 
 Redis：
 - 连接：`127.0.0.1:6379`（可由 `REDIS_HOST/REDIS_PORT/REDIS_PASSWORD` 覆盖）
